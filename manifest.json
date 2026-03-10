@@ -1,0 +1,20 @@
+{
+"name": "قاصد كريم",
+"short_name": "قاصد كريم",
+"start_url": "/",
+"display": "standalone",
+"background_color": "#ffffff",
+"theme_color": "#f48c3c",
+"icons": [
+{
+"src": "https://i.postimg.cc/PqqLK6vj/logo-psd-Photoroom.png",
+"sizes": "192x192",
+"type": "image/png"
+},
+{
+"src": "https://i.postimg.cc/PqqLK6vj/logo-psd-Photoroom.png",
+"sizes": "512x512",
+"type": "image/png"
+}
+]
+}
