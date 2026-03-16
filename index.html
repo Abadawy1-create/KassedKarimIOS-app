@@ -230,8 +230,28 @@
                 revealApp();
             }
         });
-
         window.addEventListener('DOMContentLoaded', injectIframe);
+
+        // --- HARD REALTIME REFRESH MECHANISM FOR iOS ---
+        function forceRealtimeRefresh() {
+            const GAS_URL = "https://script.google.com/macros/s/AKfycbxco9D_Mz0yAXgqL_eQRgVkWimKanZjZHV2izKXw_yyUIxCexTxH9BrInRh5xqx_BtVrw/exec";
+            fetch(GAS_URL + "?ping=" + Date.now(), {
+                method: "GET",
+                cache: "no-store"
+            }).then(() => {}).catch(() => {});
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'visible') {
+                forceRealtimeRefresh();
+            }
+        });
+
+        setInterval(forceRealtimeRefresh, 5000);
+
+        window.addEventListener("focus", forceRealtimeRefresh);
+        window.addEventListener("pageshow", forceRealtimeRefresh);
+        document.addEventListener("touchstart", forceRealtimeRefresh, { passive: true });
     </script>
 </head>
 
