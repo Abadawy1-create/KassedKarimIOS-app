@@ -243,14 +243,35 @@
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible') {
                 wakeIframe();
+                reviveIframeRuntime();
             }
         });
 
-        window.addEventListener('focus', wakeIframe);
+        function reviveIframeRuntime() {
+            const iframe = document.getElementById("app-frame");
+            if (!iframe) return;
+
+            const currentSrc = iframe.src;
+
+            const base = currentSrc.split("?")[0];
+            const hash = currentSrc.includes("#") ? currentSrc.split("#")[1] : "";
+
+            const newSrc = base + "?revive=" + Date.now() + "#" + hash;
+
+            console.log("⚡ Reviving iOS iframe runtime");
+
+            iframe.src = newSrc;
+        }
+
+        window.addEventListener('focus', function() {
+            wakeIframe();
+            reviveIframeRuntime();
+        });
 
         window.addEventListener('pageshow', function(e) {
             if (e.persisted) {
                 wakeIframe();
+                reviveIframeRuntime();
             }
         });
 
