@@ -2,199 +2,296 @@
 <html lang="ar" dir="rtl">
 
 <head>
-<meta charset="UTF-8">
-<title>قاصد كريم</title>
+    <meta charset="UTF-8">
+    <title>قاصد كريم</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
 
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+    <!-- iOS PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="قاصد كريم">
 
-<!-- iOS PWA -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="قاصد كريم">
-<link rel="apple-touch-icon" href="https://i.postimg.cc/PqqLK6vj/logo-psd-Photoroom.png">
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/PqqLK6vj/logo-psd-Photoroom.png">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/PqqLK6vj/logo-psd-Photoroom.png">
 
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* إعدادات الصفحة */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #ffffff;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-<style>
-body,html{
-margin:0;
-padding:0;
-height:100%;
-width:100%;
-overflow:hidden;
-background:#fff;
-font-family:'Cairo',sans-serif;
--webkit-tap-highlight-color:transparent;
-}
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
 
-body{
-padding-top:env(safe-area-inset-top);
-padding-bottom:env(safe-area-inset-bottom);
-}
+        /* الـ Iframe */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.6s ease-in;
+            background-color: #ffffff;
+        }
 
-iframe{
-width:100%;
-height:100%;
-border:none;
-display:block;
-opacity:0;
-transition:.4s;
-background:#fff;
-}
-iframe.visible{
-opacity:1;
-}
+        iframe.visible {
+            opacity: 1;
+        }
 
-#loader{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#fff;
-z-index:9999;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-}
+        /* --- تصميم اللودر الجديد (انسيابي) --- */
+        #loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out;
+            will-change: opacity; /* تحسين الأداء */
+        }
 
-.title{
-font-size:34px;
-font-weight:900;
-color:#0056b3;
-}
+        /* الأنيميشن الرئيسي للظهور */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px); /* يبدأ من تحت شوية */
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0); /* يستقر في مكانه */
+            }
+        }
 
-.subtitle{
-font-size:18px;
-font-weight:700;
-color:#ff8c00;
-margin-top:6px;
-}
+        .title {
+            font-size: 36px; /* تكبير بسيط للوضوح */
+            font-weight: 900;
+            color: #0056b3; /* اللون الأزرق القديم */
+            margin-bottom: 2px;
+            opacity: 0; /* مخفي في البداية */
+            /* أنيميشن ناعم جداً */
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
 
-.dots{
-display:flex;
-margin-top:25px;
-}
+        .subtitle {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ff8c00; /* اللون البرتقالي القديم */
+            margin-bottom: 35px;
+            opacity: 0; /* مخفي في البداية */
+            /* يظهر بعد العنوان بـ 0.2 ثانية */
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
+        }
 
-.dot{
-width:12px;
-height:12px;
-background:#ff8c00;
-border-radius:50%;
-margin:0 4px;
-animation:bounce .6s infinite alternate;
-}
+        /* أنيميشن النقاط */
+        .typing-indicator {
+            display: flex;
+            opacity: 0; /* مخفي في البداية */
+            /* يظهر بعدهم بـ 0.4 ثانية */
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        }
 
-.dot:nth-child(2){animation-delay:.15s}
-.dot:nth-child(3){animation-delay:.3s}
+        .dot {
+            width: 14px;
+            height: 14px;
+            margin: 0 5px;
+            background-color: #ff8c00;
+            border-radius: 50%;
+            animation: bounce 0.6s infinite alternate;
+        }
 
-@keyframes bounce{
-to{transform:translateY(-10px)}
-}
-</style>
+        .dot:nth-child(2) { animation-delay: 0.15s; }
+        .dot:nth-child(3) { animation-delay: 0.3s; }
 
-<script>
+        @keyframes bounce {
+            to { transform: translateY(-12px); }
+        }
+    </style>
 
-let iframeReady=false
-let appVisible=false
-let pollingTimer=null
+    <script>
+        // متغيرات التحكم
+        window._iframeReady = false;
+        window._fcmQueue = null;
+        window._navQueue = null;
+        window._appIsVisible = false;
 
-function injectIframe(){
+        // 1. Device ID Persistence Layer
+        function getPersistentDeviceId() {
+            let id = localStorage.getItem('PERSISTENT_DEVICE_ID');
+            if (!id) {
+                const match = document.cookie.match(/(?:^|; )persistent_device_id=([^;]*)/);
+                if (match && match[1]) {
+                    id = match[1];
+                    localStorage.setItem('PERSISTENT_DEVICE_ID', id);
+                } else {
+                    id = 'DEV_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('PERSISTENT_DEVICE_ID', id);
+                    document.cookie = `persistent_device_id=${id}; max-age=31536000; path=/`;
+                }
+            } else {
+                document.cookie = `persistent_device_id=${id}; max-age=31536000; path=/`;
+            }
+            return id;
+        }
 
-let deviceId=localStorage.getItem("PERSISTENT_DEVICE_ID")
+        // 2. دالة إنشاء الـ Iframe
+        function injectIframe() {
+            let deviceId = getPersistentDeviceId();
+            
+            const gasUrl = "https://script.google.com/macros/s/AKfycbxco9D_Mz0yAXgqL_eQRgVkWimKanZjZHV2izKXw_yyUIxCexTxH9BrInRh5xqx_BtVrw/exec";
+            const storedFcm = localStorage.getItem('FCM_TOKEN') || '';
+            const finalUrl = `${gasUrl}#deviceId=${deviceId}&fcmToken=${encodeURIComponent(storedFcm)}`;
 
-if(!deviceId){
-deviceId="DEV_"+Date.now().toString(36)+Math.random().toString(36).substr(2,9)
-localStorage.setItem("PERSISTENT_DEVICE_ID",deviceId)
-}
+            const iframe = document.createElement('iframe');
+            iframe.id = 'app-frame';
+            iframe.setAttribute('allow', 'microphone *; camera *; geolocation *');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-presentation allow-top-navigation allow-top-navigation-by-user-activation');
+            iframe.src = finalUrl;
 
-const gas="https://script.google.com/macros/s/AKfycbxco9D_Mz0yAXgqL_eQRgVkWimKanZjZHV2izKXw_yyUIxCexTxH9BrInRh5xqx_BtVrw/exec"
+            // Fallback load
+            iframe.onload = function() {
+                console.log('🌐 [Loader] Iframe loaded.');
+            };
 
-const iframe=document.createElement("iframe")
-iframe.id="app"
+            document.body.appendChild(iframe);
+        }
 
-iframe.src=gas+"#deviceId="+deviceId
+        // 3. دالة إظهار التطبيق (مع التأخير لتغطية اللودر الداخلي)
+        function revealApp() {
+            if (window._appIsVisible) return;
+            window._appIsVisible = true;
 
-document.body.appendChild(iframe)
+            console.log('✨ [Loader] Revealing App...');
+            
+            const iframe = document.getElementById('app-frame');
+            const loader = document.getElementById('loader-container');
 
-}
+            if (iframe) iframe.classList.add('visible');
+            
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 800);
+            }
+        }
 
-function reveal(){
+        // 3. استقبال التوكن
+        window.receiveFcmToken = function (token) {
+            console.log('📲 [Bridge] Token Received');
+            if (!token) return;
+            localStorage.setItem('FCM_TOKEN', token);
+            if (window._iframeReady) {
+                postToIframe({ type: 'FCM_TOKEN', token: token });
+            } else {
+                window._fcmQueue = token;
+            }
+        };
 
-if(appVisible) return
-appVisible=true
+        // 4. استقبال التنقل
+        window.openOrdersPage = function () {
+            console.log('🔗 [Bridge] Navigate to Orders');
+            if (window._iframeReady) {
+                postToIframe({ type: 'OPEN_ORDERS' });
+            } else {
+                window._navQueue = 'orders';
+            }
+        };
 
-document.getElementById("app").classList.add("visible")
+        function postToIframe(msg) {
+            const iframe = document.getElementById('app-frame');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage(msg, '*');
+            }
+        }
 
-setTimeout(()=>{
-document.getElementById("loader").style.display="none"
-},900)
+        // 6. الاستماع للرسائل (Heartbeat, Loader, Sync)
+        window.addEventListener('message', (event) => {
+            if (event.data?.type === 'APP_RENDERED') {
+                console.log('✅ [Bridge] GAS App Signal: RENDERED');
+                window._iframeReady = true;
 
-startPolling()
+                const currentDeviceId = getPersistentDeviceId();
+                postToIframe({ type: 'SET_DEVICE_ID', deviceId: currentDeviceId });
 
-}
+                if (window._fcmQueue) {
+                    postToIframe({ type: 'FCM_TOKEN', token: window._fcmQueue });
+                    window._fcmQueue = null;
+                }
+                if (window._navQueue === 'orders') {
+                    postToIframe({ type: 'OPEN_ORDERS' });
+                    window._navQueue = null;
+                }
 
-function startPolling(){
+                revealApp();
+            }
 
-if(pollingTimer) clearInterval(pollingTimer)
+            if (event.data?.type === 'ALIVE') {
+                window.__lastAlive = Date.now();
+            }
+        });
 
-pollingTimer=setInterval(()=>{
+        // 7. iOS HEARTBEAT ARCHITECTURE 
+        setInterval(() => {
+            if (window._iframeReady && window._appIsVisible) {
+                postToIframe({ type: "WAKE" });
+                
+                if (window.__lastAlive && Date.now() - window.__lastAlive > 20000) {
+                    console.log('⚠️ [Bridge] iOS Iframe Frozen. Soft Reloading Context.');
+                    const iframe = document.getElementById('app-frame');
+                    if (iframe) {
+                        const gasUrlBase = iframe.src.split('#')[0].split('?')[0];
+                        const hashParams = iframe.src.split('#')[1] || '';
+                        iframe.src = gasUrlBase + "?revive=" + Date.now() + "#" + hashParams;
+                        window.__lastAlive = Date.now(); // reset
+                    }
+                }
+            }
+        }, 8000);
 
-const frame=document.getElementById("app")
+        // 8. FORCE SYNC ON LIFECYCLES
+        const fireForceSync = () => postToIframe({ type: 'FORCE_SYNC' });
+        document.addEventListener('touchstart', fireForceSync, { passive: true });
+        window.addEventListener('focus', fireForceSync);
+        window.addEventListener('pageshow', fireForceSync);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') fireForceSync();
+        });
 
-if(frame && frame.contentWindow){
-frame.contentWindow.postMessage({type:"WAKE_UP"}, "*")
-}
+        window.addEventListener('DOMContentLoaded', injectIframe);
 
-},10000)
-
-}
-
-window.addEventListener("message",(e)=>{
-
-if(e.data && e.data.type==="IFRAME_READY"){
-iframeReady=true
-reveal()
-}
-
-})
-
-document.addEventListener("visibilitychange",()=>{
-if(document.visibilityState==="visible"){
-wake()
-}
-})
-
-window.addEventListener("focus",wake)
-window.addEventListener("pageshow",wake)
-document.addEventListener("touchstart",wake,{passive:true})
-
-function wake(){
-const frame=document.getElementById("app")
-if(frame && frame.contentWindow){
-frame.contentWindow.postMessage({type:"WAKE_UP"}, "*")
-}
-}
-
-window.addEventListener("DOMContentLoaded",injectIframe)
-
-</script>
-
+    </script>
 </head>
 
 <body>
+    <div id="loader-container">
+        <div class="title">قاصد كريم</div>
+        <div class="subtitle">التطبيق الذكي</div>
+        <div class="typing-indicator">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
 
-<div id="loader">
-<div class="title">قاصد كريم</div>
-<div class="subtitle">التطبيق الذكي</div>
-<div class="dots">
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-</div>
-</div>
-
+    <script>
+        // No arbitrary safety timers anymore
+    </script>
 </body>
 </html>
