@@ -243,35 +243,40 @@
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible') {
                 wakeIframe();
-                reviveIframeRuntime();
+                safeReviveIframe();
             }
         });
 
-        function reviveIframeRuntime() {
+        function safeReviveIframe() {
             const iframe = document.getElementById("app-frame");
+
             if (!iframe) return;
+            if (!window._iframeReady) return;
+            if (!window._appIsVisible) return;
 
-            const currentSrc = iframe.src;
+            console.log("🟢 SAFE iOS revive triggered");
 
-            const base = currentSrc.split("?")[0];
-            const hash = currentSrc.includes("#") ? currentSrc.split("#")[1] : "";
+            const current = iframe.src;
 
-            const newSrc = base + "?revive=" + Date.now() + "#" + hash;
+            const base = current.split("?")[0];
+            const hash = current.includes("#") ? current.split("#")[1] : "";
 
-            console.log("⚡ Reviving iOS iframe runtime");
+            const newSrc = base + "?alive=" + Date.now() + "#" + hash;
 
-            iframe.src = newSrc;
+            setTimeout(function() {
+                iframe.src = newSrc;
+            }, 120);
         }
 
         window.addEventListener('focus', function() {
             wakeIframe();
-            reviveIframeRuntime();
+            safeReviveIframe();
         });
 
         window.addEventListener('pageshow', function(e) {
             if (e.persisted) {
                 wakeIframe();
-                reviveIframeRuntime();
+                safeReviveIframe();
             }
         });
 
