@@ -232,26 +232,29 @@
         });
         window.addEventListener('DOMContentLoaded', injectIframe);
 
-        // --- HARD REALTIME REFRESH MECHANISM FOR iOS ---
-        function forceRealtimeRefresh() {
-            const GAS_URL = "https://script.google.com/macros/s/AKfycbxco9D_Mz0yAXgqL_eQRgVkWimKanZjZHV2izKXw_yyUIxCexTxH9BrInRh5xqx_BtVrw/exec";
-            fetch(GAS_URL + "?ping=" + Date.now(), {
-                method: "GET",
-                cache: "no-store"
-            }).then(() => {}).catch(() => {});
+        // --- iOS WAKE SIGNAL ARCHITECTURE ---
+        function wakeIframe() {
+            const iframe = document.getElementById('app-frame');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({type: 'WAKE_UP'}, '*');
+            }
         }
 
-        document.addEventListener("visibilitychange", () => {
+        document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible') {
-                forceRealtimeRefresh();
+                wakeIframe();
             }
         });
 
-        setInterval(forceRealtimeRefresh, 5000);
+        window.addEventListener('focus', wakeIframe);
 
-        window.addEventListener("focus", forceRealtimeRefresh);
-        window.addEventListener("pageshow", forceRealtimeRefresh);
-        document.addEventListener("touchstart", forceRealtimeRefresh, { passive: true });
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                wakeIframe();
+            }
+        });
+
+        document.addEventListener('touchstart', wakeIframe, { passive: true });
     </script>
 </head>
 
